@@ -14,3 +14,8 @@ hackingInstructor:
   isEnabled: false
 ctf:
   showFlagsInNotifications: true
+
+set NODE_ENV=ctf     # on Windows
+export NODE_ENV=ctf  # on Linux
+
+npm start
