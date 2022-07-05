@@ -48,8 +48,6 @@ assets/
 config/*.yml
 !config/addo.yml
 !config/bodgeit.yml
-!config/ctf.yml
-!config/fbctf.yml
 !config/default.yml
 !config/juicebox.yml
 !config/quiet.yml
