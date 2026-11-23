@@ -3,8 +3,8 @@ describe("/#/basket", () => {
     beforeEach(() => {
       cy.login({
         email: "wurstbrot",
-        password: "EinBelegtesBrotMitSchinkenSCHINKEN!",
-        totpSecret: "IFTXE3SPOEYVURT2MRYGI52TKJ4HC3KH",
+        password: Cypress.env("WURSTBROT_PASSWORD"),
+        totpSecret: Cypress.env("WURSTBROT_TOTP_SECRET"),
       });
     });
 
@@ -17,7 +17,7 @@ describe("/#/basket", () => {
     beforeEach(() => {
       cy.login({
         email: "amy",
-        password: "K1f.....................",
+        password: Cypress.env("AMY_PASSWORD"),
       });
     });
 
@@ -28,13 +28,13 @@ describe("/#/basket", () => {
         .should("have.attr", "data-test-totp-secret")
         .then(($val) => {
           // console.log($val);
-          cy.get("#currentPasswordSetup").type("K1f.....................");
+          cy.get("#currentPasswordSetup").type(Cypress.env("AMY_PASSWORD"));
 
           cy.task("GenerateAuthenticator", $val).then((secret: string) => {
             cy.get("#initalToken").type(secret);
             cy.get("#setupTwoFactorAuth").click();
 
-            cy.get("#currentPasswordDisable").type("K1f.....................");
+            cy.get("#currentPasswordDisable").type(Cypress.env("AMY_PASSWORD"));
             cy.get("#disableTwoFactorAuth").click();
           });
         });
