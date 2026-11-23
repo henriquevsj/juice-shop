@@ -9,6 +9,23 @@ import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { RouterTestingModule } from '@angular/router/testing'
 import { ErrorPageComponent } from './error-page/error-page.component'
 
+// Builds a JWT-like token at runtime (header.payload.signature) without embedding
+// a static/hardcoded secret-bearing token in the source code.
+function buildFakeJwt (payload: object): string {
+  const base64UrlEncode = (obj: object): string =>
+    btoa(JSON.stringify(obj))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '')
+
+  const header = { alg: 'HS256', typ: 'JWT' }
+  const encodedHeader = base64UrlEncode(header)
+  const encodedPayload = base64UrlEncode(payload)
+  const fakeSignature = 'test-signature'
+
+  return `${encodedHeader}.${encodedPayload}.${fakeSignature}`
+}
+
 describe('LoginGuard', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -37,12 +54,13 @@ describe('LoginGuard', () => {
   }))
 
   it('returns payload from decoding a valid JWT', inject([LoginGuard], (guard: LoginGuard) => {
-    localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c')
-    expect(guard.tokenDecode()).toEqual({
+    const payload = {
       sub: '1234567890',
       name: 'John Doe',
       iat: 1516239022
-    })
+    }
+    localStorage.setItem('token', buildFakeJwt(payload))
+    expect(guard.tokenDecode()).toEqual(payload)
   }))
 
   it('returns nothing when decoding an invalid JWT', inject([LoginGuard], (guard: LoginGuard) => {
